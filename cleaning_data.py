@@ -33,7 +33,7 @@ raw_data = raw_data[raw_data['Status'] != 'In Grace Period']
 '''
 
 
-data = raw_data.drop(['Months Since Last Delinquency', 'Revolving Line Utilization', 'Months Since Last Record'], axis = 1)
+data = raw_data.drop(['Months Since Last Delinquency', 'Revolving Line Utilization', 'Months Since Last Record', 'Accounts Now Delinquent'], axis = 1)
 
 
 data = data[data['Approx. Fico Score'].notna()]
@@ -50,8 +50,15 @@ data['Status'] = data['Status'].map({'Not Delinquent': 0, 'Delinquent': 1})
 #change Loan Lenths months to an interger
 data['Loan Length'] = data['Loan Length'].str.replace('months', '').astype(int)
 
+#replace all employee lengths with Nan with average
+data['Employment Length'].fillna((data['Employment Length'].mean()), inplace = True)
+
 #grouby the delinquent and not delinquent
 data_stat = data.groupby('Status').describe().reset_index()
+
+
+
+
 #save a csv file with the infromation
 '''
 dt = data.drop(['Status', 'Home Ownership_ANY',
@@ -65,18 +72,18 @@ for x in columns:
 print(data.columns)
 '''
 
+
 #change column names to be easier to write and read
 
 data.columns = ['total_amount', 'loan_lenght', 'month_pay',
        'debt_income_ratio', 'month_income', 'fico_score',
        'open_credit_lines', 'tot_credit_lines', 'rev_credit_bal',
-       'inquiries_6_month', 'acc_now_delinquent',
+       'inquiries_6_month',
        'del_last_2yrs', 'public_records',
        'employ_length', 'status', 'home_any',
        'home_mortage', 'home_none', 'home_own',
        'home_rent']
 
-print (data.columns)
 
-data.to_csv('clean_sdata.csv',index = False, header=True)
+#data.to_csv('clean_sdata.csv',index = False, header=True)
 
