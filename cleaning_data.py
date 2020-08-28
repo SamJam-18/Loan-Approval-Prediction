@@ -30,10 +30,11 @@ raw_data = raw_data[raw_data['Status'] != 'In Grace Period']
        'Inquiries in the Last 6 Months', 'Accounts Now Delinquent',
        'Delinquencies (Last 2 yrs)', 'Months Since Last Delinquency',
        'Public Records On File'] - dropped applicants
+        - Revolving Credit Balance is taken at a specific time after loan has been approved so I dropped it
 '''
 
 
-data = raw_data.drop(['Months Since Last Delinquency', 'Revolving Line Utilization', 'Months Since Last Record', 'Accounts Now Delinquent'], axis = 1)
+data = raw_data.drop(['Months Since Last Delinquency', 'Revolving Line Utilization', 'Months Since Last Record', 'Accounts Now Delinquent', 'Revolving CREDIT Balance'], axis = 1)
 
 
 data = data[data['Approx. Fico Score'].notna()]
@@ -77,7 +78,7 @@ print(data.columns)
 
 data.columns = ['total_amount', 'loan_lenght', 'month_pay',
        'debt_income_ratio', 'month_income', 'fico_score',
-       'open_credit_lines', 'tot_credit_lines', 'rev_credit_bal',
+       'open_credit_lines', 'tot_credit_lines',
        'inquiries_6_month',
        'del_last_2yrs', 'public_records',
        'employ_length', 'status', 'home_any',
@@ -85,5 +86,5 @@ data.columns = ['total_amount', 'loan_lenght', 'month_pay',
        'home_rent']
 
 
-#data.to_csv('clean_sdata.csv',index = False, header=True)
+data.to_csv('clean_sdata.csv',index = False, header=True)
 
