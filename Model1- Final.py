@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import svm
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, r2_score, confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, r2_score, confusion_matrix, plot_confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import defaultdict
@@ -60,7 +60,7 @@ def train_test(X, y, test_size = .20, sample = 'over'):
 #print (train_test(X, y))
 
 #creating the model chosen(RandomForest-over sampling)
-def RF(X,y, sample = 'under'):
+def RF(X,y, sample = 'over'):
 
   X_train, X_test, y_train, y_test = train_test(X,y, sample = sample)
 
@@ -98,11 +98,11 @@ def RF(X,y, sample = 'under'):
   return (grid.fit(X_train, y_train))
 
 
-#(RF(X,y))
+#RF(X,y))
 
 def Fin_mod_1(X, y):
 
-  #X = X.drop(['Delinquences last 2 yrs', 'Loan Length', 'Home: Rent', 'Home: Mortage', 'Home: Own', 'Home: Any', 'Home: None', 'Debt to Income ratio', 'Employment Length' ], axis =1)
+  X = X.drop(['Delinquences last 2 yrs', 'Loan Length', 'Home: Rent', 'Home: Mortage', 'Home: Own', 'Home: Any', 'Home: None', 'Employment Length' ], axis =1)
 
   X_train, X_test, y_train, y_test = train_test(X,y, sample = 'over')
 
@@ -122,9 +122,9 @@ def Fin_mod_1(X, y):
 
 
 
-  y_preds = grid.predict_proba(X_test)
+  y_preds = grid.predict(X_test)
 
-  #return (grid.fit(X_train, y_train))
+
 
 
   acc = accuracy_score(y_test, y_preds)
@@ -138,9 +138,11 @@ def Fin_mod_1(X, y):
   print('Recall: %.3f' % rec)
   print('f1: %.3f' % f1)
 
+  return (y_preds, y_test)
 
 
-Fin_mod_1(X,y)
+
+#Fin_mod_1(X,y)
 
 
 #calc fearue importance (The impurity-based feature importances)
@@ -199,7 +201,7 @@ def MDI(X,y, sample = 'over'):
 
   return(y_axis)
 
-MDI(X,y, sample = 'over')
+#MDI(X,y, sample = 'over')
 
 
 #Final Model with all the changes to the data and tuned
@@ -213,6 +215,9 @@ def profit(df, X, y):
   gain = [454, 880, 1154, 1406, 1943,
             2304, 3143, 4091, 5961]
 
+  gain_n = [-454, -880, -1154, -1406, -1943,
+            -2304, -3143, -4091, -5961]
+
   loss = [-1125, -2110, -2756, -3502, -4373, -5149, -6220, -7532, -9509]
 
   range_loan = ['500 - 3200', '3200 - 5000', '5000 - 6000', '6000-8000', '8000-10,000', '10,000-11,625', '11,625-14,000', '14,000-16,100', '16,100-21,250']
@@ -223,8 +228,8 @@ def profit(df, X, y):
 
   for x in range(len(loss)): #run through each range of loan price
 
-    cost_benefit_matrix = np.array([[gain[x], 0],
-                                      [loss[x], 0]])
+    cost_benefit_matrix = np.array([[0, gain_n[x]],
+                                      [loss[x], gain[x]]])
 
     data = df[x]
     y = data['status']
@@ -242,12 +247,12 @@ def profit(df, X, y):
 
     print (range_loan[x])
     print (profit)
-    print (len(new_pred))
+    print ('------')
 
   new_pred, y_test = Fin_mod_1(X,y)
 
-  cost_benefit_matrix = np.array([[3109, 0],
-                                      [-5583, 0]])
+  cost_benefit_matrix = np.array([[0, -3109],
+                                      [-5583, 3109]])
 
   [[tn, fp], [fn, tp]] = confusion_matrix(y_test, new_pred)
   conf_matrix = np.array([[tp, fp], [fn, tn]])
@@ -257,4 +262,9 @@ def profit(df, X, y):
   print ('TOTAL')
   print (profit)
 
-#profit(df, X, y)
+  sns.heatmap(conf_matrix, annot=True, cmap = 'Blues')
+  plt.show()
+
+profit(df, X, y)
+
+

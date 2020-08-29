@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import svm
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, r2_score, confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, r2_score, confusion_matrix, plot_confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import defaultdict
@@ -77,28 +77,23 @@ def run_model2(X, y, sample):
           #'class_weight': [None],
           #'criterion': ['gini'],
 
-  grid_= {
-          'max_depth': [2,5,10, 20],
-          'max_features': ['auto', 'sqrt', 'log2'],
-          'min_samples_leaf': [1, 2, 4],
-          'min_samples_split': [2, 5, 10]
-          }
+  grid_= {}
 
   grid = GridSearchCV(K, grid_)
   grid.fit(X_train, y_train)
 
   print (grid.best_params_)
 
-  y_pred = grid.predict_proba(X_test)[:,0] #get the probability of getting 1
+  y_pred = grid.predict_proba(X_test)[:,1] #get the probability of getting 1
   #given a threshold - made a new prediction array to compare with the y_test data
 
   new_pred = []
 
   for x in y_pred:
     if x  > .95:
-      new_pred.append(0)
-    else:
       new_pred.append(1)
+    else:
+      new_pred.append(0)
 
   acc = accuracy_score(y_test, new_pred)
   prec = precision_score(y_test, new_pred)
@@ -114,7 +109,7 @@ def run_model2(X, y, sample):
 
   return (grid.fit(X_train, y_train), y_pred)
 
-run_model2(X,y, sample = 'under')
+#run_model2(X,y, sample = 'under')
 
 
 
@@ -147,7 +142,7 @@ def feat(X,y):
   plt.xlabel('Relative Importance')
   plt.savefig('Model_plots/Feature Importances RFP.png', bbox_inches='tight')
 
-  #plt.show()
+  plt.show()
 
 #feat(X,y)
 
@@ -179,7 +174,7 @@ def MDI(X,y, sample = 'over'):
 #final model with hyperparameters
 def Fin_mod_2(X, y):
 
-  X = X.drop(['Delinquences last 2 yrs', 'Loan Length', 'Home: Rent', 'Home: Mortage', 'Public Records on File', 'Home: Own', 'Home: Any', 'Home: None'], axis =1)
+  #X = X.drop(['Delinquences last 2 yrs', 'Loan Length', 'Home: Rent', 'Home: Mortage', 'Public Records on File', 'Home: Own', 'Home: Any', 'Home: None'], axis =1)
 
   X_train, X_test, y_train, y_test = train_test(X,y, sample = 'under')
 
@@ -197,16 +192,17 @@ def Fin_mod_2(X, y):
   grid = GridSearchCV(RF, grid_)
   grid.fit(X_train, y_train)
 
-  y_pred = grid.predict_proba(X_test)[:,0] #get the probability of getting 1
+  y_pred = grid.predict_proba(X_test)[:,1] #get the probability of getting 1 aka delinquent
   #given a threshold - made a new prediction array to compare with the y_test data
 
   new_pred = []
-
   for x in y_pred:
-    if x  > .95:
-      new_pred.append(0)
-    else:
+    if x  > .70:
       new_pred.append(1)
+    else:
+      new_pred.append(0)
+
+  #return (new_pred, y_test)
 
   acc = accuracy_score(y_test, new_pred)
   prec = precision_score(y_test, new_pred)
@@ -226,8 +222,8 @@ def Fin_mod_2(X, y):
 
 
 
-
-
+'''
+#calculate the best threshold - just went with .95 because I wanted a high percision score
 def thres(df,X,y):
   #get a range of thresholds
   thresholds = np.linspace(0, 1, 100).tolist()
@@ -236,6 +232,9 @@ def thres(df,X,y):
 
   gain = [454, 880, 1154, 1406, 1943,
             2304, 3143, 4091, 5961]
+
+  gain_n = [-454, -880, -1154, -1406, -1943,
+            -2304, -3143, -4091, -5961]
 
   loss = [-1125, -2110, -2756, -3502, -4373, -5149, -6220, -7532, -9509]
 
@@ -250,8 +249,8 @@ def thres(df,X,y):
 
 
   for z in range(len(gain)): #run through each range of loan price
-    cost_benefit_matrix = np.array([[gain[z], 0],
-                                    [loss[z], 0]])
+    cost_benefit_matrix = np.array([[0, gain_n[z]],
+                                      [loss[z], gain[z]]])
 
     data = df[z]
     y = data['status']
@@ -264,9 +263,9 @@ def thres(df,X,y):
       new_pred = []
       for x in y_pred: #run through each y_pred
         if x  > thresh:
-          new_pred.append(0)
-        else:
           new_pred.append(1)
+        else:
+          new_pred.append(0)
       #create a confusion matrix
       [[tn, fp], [fn, tp]] = confusion_matrix(y_test, new_pred)
       conf_matrix = np.array([[tp, fp], [fn, tn]])
@@ -291,11 +290,14 @@ def thres(df,X,y):
   plt.show()
 
 #thres(df,X,y)
-
+'''
 
 def profit(df, X, y):
 
   profits = []
+
+  gain_n = [-454, -880, -1154, -1406, -1943,
+            -2304, -3143, -4091, -5961]
 
   gain = [454, 880, 1154, 1406, 1943,
             2304, 3143, 4091, 5961]
@@ -310,8 +312,8 @@ def profit(df, X, y):
 
   for x in range(len(loss)): #run through each range of loan price
 
-    cost_benefit_matrix = np.array([[gain[x], 0],
-                                      [loss[x], 0]])
+    cost_benefit_matrix = np.array([[0, gain_n[x]],
+                                      [loss[x], gain[x]]])
 
     data = df[x]
     y = data['status']
@@ -328,21 +330,27 @@ def profit(df, X, y):
     profit = np.sum(conf_matrix * cost_benefit_matrix)
 
     print (range_loan[x])
+    print ('-----')
     print (profit)
-    print (len(new_pred))
+    print ('-----')
 
-  new_pred, y_test = Fin_mod_2(X,y)
+profit(df, X, y)
 
-  cost_benefit_matrix = np.array([[3109, 0],
-                                      [-5583, 0]])
 
-  [[tn, fp], [fn, tp]] = confusion_matrix(y_test, new_pred)
-  conf_matrix = np.array([[tp, fp], [fn, tn]])
+new_pred, y_test = Fin_mod_2(X,y)
 
-  profit = np.sum(conf_matrix * cost_benefit_matrix)
+cost_benefit_matrix = np.array([[0, -3109],
+                              [-5583, 3109]])
 
-  print ('TOTAL')
-  print (profit)
+[[tn, fp], [fn, tp]] = confusion_matrix(y_test, new_pred)
+conf_matrix = np.array([[tp, fp], [fn, tn]])
 
-#profit(df, X, y)
+profit = np.sum(conf_matrix * cost_benefit_matrix)
 
+print ('TOTAL')
+print (profit)
+
+
+sns.heatmap(conf_matrix, annot=True, cmap = 'Blues')
+plt.show()
+plt.savefig('Model_plots/2_conf.png', bbox_inches='tight')
