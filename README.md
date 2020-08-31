@@ -43,6 +43,10 @@ After Choosing my models I tuned them with GridSearchCV to try and get a more ba
 I wanted to try and calculate the profit taking into account the price of the loan as each loan will incure a diffrent profit. to do this I sperated the data into nine equal sets bassed off of loan amount, calculated the average gain and loss of each range to create the benifit matrix. I then ran my data sets through the models and calcukated profit. The problem with this approach and calculation is that it only trains and tests the model on that single seperated dataset. Below I show my results but the only calculation to take into account is the ALL row that shows the profit from the entire dataset. 
 
 #### Model 1
+Presision =  0.089
+Acuraccy = 0.612
+Recall = 0.548
+
 <img src = "Model_plots/Model1-result.png">
 
 <img src="Model_plots/conf.png" width="700" height="700">
@@ -51,6 +55,10 @@ I wanted to try and calculate the profit taking into account the price of the lo
 
 #### Model 2
 Here I used a 0.70 thresold to try and balance my accuracy, percision and recall score. My precision score was incredibly low due to the data being so unbalanced. 
+Presision =  0.200
+Acuraccy = 0.929
+Recall = 0.018
+
 <img src = "Model_plots/Model2-result.png">
 
 <img src = "Model_plots/prob_conf.png" width="700" height="700">
