@@ -22,10 +22,10 @@ While looking through the data I took out Revolving Credit Balance, Revolving Li
 ## Testing and Balancing
 For my models I tested diffrent Classification Regression models along with over and under sampling. Below is a chart showing the diffrent results I got for each model, I primarily looked at the recall score for each model because there is a high cost with a false negative. I decided to go with two models the first one is a prediction model (50/50) and the secound is a pridiction percentage model and I found the best threshold to use when I tuned the model later. I highlited the models Ichose for the final training and testing. 
 ### Model 1
-![picture](Model_plots/Screen Shot 2020-08-30 at 8.02.27 PM.png)
+![picture](Model_plots/Table1.png)
 
 ### Model 2
-![picture](Model_plots/Screen Shot 2020-08-30 at 8.02.40 PM.png)
+![picture](Model_plots/Table2.png)
 
 
 
