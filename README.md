@@ -44,6 +44,7 @@ I wanted to try and calculate the profit taking into account the price of the lo
 
 #### Model 1
 <img src = "Model_plots/Model1-result.png">
+
 <img src="Model_plots/conf.png" width="700" height="700">
 
 
@@ -51,6 +52,7 @@ I wanted to try and calculate the profit taking into account the price of the lo
 #### Model 2
 Here I used a 0.70 thresold to try and balance my accuracy, percision and recall score. My precision score was incredibly low due to the data being so unbalanced. 
 <img src = "Model_plots/Model2-result.png">
-<img src = "Model_plots/prob_conf.png". width="700" height="700">
+
+<img src = "Model_plots/prob_conf.png" width="700" height="700">
 
  
